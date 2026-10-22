@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0b0d0b">
+<meta name="description" content="Vantra Shortcuts Series: historias cortas, mundos enormes.">
+<title>Vantra Shortcuts Series</title>
+<style>
+:root{color-scheme:dark;--bg:#0b0d0b;--panel:#151915;--line:#2a332b;--text:#f5f6f1;--muted:#a1aaa0;--lime:#c6ff4d}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:15px system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+a{color:inherit;text-decoration:none}
+.wrap{max-width:1200px;margin:auto;padding:0 22px}
+.top{height:72px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #ffffff14}
+.brand{font-weight:900;letter-spacing:.1em}
+.brand b{color:var(--lime)}
+.brand small{display:block;color:var(--muted);font-size:9px;letter-spacing:.18em}
+.nav{display:flex;align-items:center;gap:20px;color:var(--muted);font-size:13px}
+.button{border:0;border-radius:9px;background:var(--lime);color:#11160c;padding:11px 16px;font-weight:800;cursor:pointer}
+.hero{padding:62px 0 48px;display:grid;grid-template-columns:1.2fr .8fr;gap:24px;align-items:center}
+.eyebrow{font-size:10px;letter-spacing:.2em;color:var(--lime);font-weight:800}
+.hero h1{font-size:clamp(40px,7vw,76px);line-height:.99;letter-spacing:-.06em;margin:16px 0}
+.hero h1 em{font-style:normal;color:var(--lime)}
+.hero p{max-width:520px;line-height:1.7;color:var(--muted)}
+.hero-art{min-height:340px;border:1px solid #30392e;border-radius:18px;overflow:hidden;position:relative;background:linear-gradient(145deg,#53633a 0%,#1b2719 35%,#101210 75%);display:flex;align-items:flex-end;padding:24px}
+.hero-art:before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 70% 25%,#d5ff7440,transparent 32%),linear-gradient(0deg,#070907 0%,transparent 80%)}
+.hero-art .art-title{position:relative;z-index:1}
+.art-title strong{font-size:clamp(25px,4vw,42px);display:block;letter-spacing:-.04em}
+.art-title span{font-size:10px;letter-spacing:.18em;color:var(--lime)}
+.section-head{display:flex;align-items:end;justify-content:space-between;gap:18px;margin:25px 0 18px}
+.section-head h2{margin:0;font-size:28px;letter-spacing:-.04em}
+.section-head p{margin:6px 0 0;color:var(--muted);font-size:13px}
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
+.filter{background:transparent;border:1px solid var(--line);color:var(--muted);border-radius:99px;padding:8px 13px;cursor:pointer}
+.filter.active{background:var(--lime);border-color:var(--lime);color:#11160c;font-weight:800}
+.catalog{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+.series{border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--panel);transition:transform .18s,border-color .18s}
+.series:hover{transform:translateY(-3px);border-color:#687f43}
+.poster{aspect-ratio:3/4;position:relative;overflow:hidden;display:flex;align-items:flex-end;padding:17px;background:linear-gradient(155deg,#6b7f44,#293622 42%,#0b100c 90%)}
+.poster:before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 55% 25%,#e1ff9b66,transparent 25%),linear-gradient(0deg,#080a08 0%,transparent 75%)}
+.poster .poster-words{position:relative;font-weight:900;font-size:clamp(21px,2.6vw,31px);line-height:.94;letter-spacing:-.05em;text-transform:uppercase;text-shadow:0 2px 20px #000}
+.poster .poster-words small{display:block;color:var(--lime);font-size:9px;letter-spacing:.15em;margin-bottom:8px}
+.series-body{padding:14px}
+.series-body h3{margin:0 0 6px;font-size:16px}
+.meta{font-size:11px;color:var(--muted)}
+.synopsis{color:#c3cbc1;font-size:12px;line-height:1.55;margin:10px 0 14px}
+.series-body button{width:100%}
+.empty{padding:28px;border:1px dashed var(--line);border-radius:14px;color:var(--muted);text-align:center;grid-column:1/-1}
+.foot{border-top:1px solid var(--line);margin-top:55px;padding:22px 0 35px;color:var(--muted);font-size:11px;display:flex;justify-content:space-between;gap:12px}
+.modal{position:fixed;inset:0;background:#000c;display:none;align-items:center;justify-content:center;padding:20px;z-index:10}
+.modal.open{display:flex}
+.modal-card{width:min(560px,100%);background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:24px}
+.modal-card h2{font-size:30px;margin:0 0 10px}
+.modal-card p{color:var(--muted);line-height:1.7}
+.modal-actions{display:flex;gap:10px;flex-wrap:wrap}
+.ghost{background:transparent;border:1px solid var(--line);color:var(--text)}
+#notice{color:var(--muted);font-size:12px;min-height:18px}
+@media(max-width:850px){
+.hero{grid-template-columns:1fr;padding-top:42px}
+.hero-art{min-height:230px}
+.catalog{grid-template-columns:repeat(2,minmax(0,1fr))}
+.nav{gap:10px}
+.nav .nav-hide{display:none}
+}
+@media(max-width:440px){
+.wrap{padding:0 14px}
+.top{height:64px}
+.hero h1{font-size:43px}
+.catalog{gap:10px}
+.series-body{padding:11px}
+.poster{padding:12px}
+.poster .poster-words{font-size:24px}
+.section-head h2{font-size:24px}
+.foot{flex-direction:column}
+}
+</style>
+</head>
+<body>
+<header class="wrap top">
+<a class="brand" href="#"><b>V</b> VANTRA <small>SHORTCUTS SERIES</small></a>
+<nav class="nav">
+<a href="#catalogo">Explorar</a>
+<a class="nav-hide" href="#como-funciona">Cómo funciona</a>
+<a class="button" href="#catalogo">Ver series</a>
+</nav>
+</header>
+
+<main class="wrap">
+<section class="hero">
+<div>
+<p class="eyebrow">HISTORIAS CORTAS. MUNDOS ENORMES.</p>
+<h1>Un mundo nuevo<br>en cada <em>episodio.</em></h1>
+<p>Series verticales, historias intensas y universos que te atrapan desde el primer minuto. Descubrí tu próxima obsesión.</p>
+<a class="button" href="#catalogo">Explorar catálogo ↗</a>
+</div>
+<div class="hero-art">
+<div class="art-title">
+<span>VANTRA ORIGINALS · DEMO</span>
+<strong>EL ÚLTIMO<br>REFUGIO</strong>
+</div>
+</div>
+</section>
+
+<section id="catalogo">
+<div class="section-head">
+<div>
+<p class="eyebrow">DESCUBRÍ TU PRÓXIMA HISTORIA</p>
+<h2>Series para maratonear</h2>
+<p>Catálogo de prueba conectado a los datos publicados de Vantra.</p>
+</div>
+</div>
+<div id="filters" class="filters">
+<button class="filter active" data-genre="Todos">Todo</button>
+<button class="filter" data-genre="Apocalipsis">Apocalipsis</button>
+<button class="filter" data-genre="Acción">Acción</button>
+<button class="filter" data-genre="Thriller">Thriller</button>
+<button class="filter" data-genre="Ciencia ficción">Ciencia ficción</button>
+<button class="filter" data-genre="Drama">Drama</button>
+</div>
+<div id="catalog" class="catalog">
+<div class="empty">Cargando catálogo…</div>
+</div>
+<p id="notice"></p>
+</section>
+
+<section id="como-funciona" style="margin-top:48px">
+<div class="section-head">
+<div>
+<p class="eyebrow">HECHO PARA VERSE EN EL TELÉFONO</p>
+<h2>Tu siguiente episodio, a un toque</h2>
+<p>Esta versión es un prototipo funcional de catálogo. La reproducción completa se habilitará al conectar el alojamiento de video.</p>
+</div>
+</div>
+</section>
+
+<footer class="foot">
+<span>© VANTRA SHORTCUTS SERIES</span>
+<span>Historias cortas. Mundos enormes.</span>
+</footer>
+</main>
+
+<div class="modal" id="modal" role="dialog" aria-modal="true">
+<div class="modal-card">
+<p class="eyebrow">FICHA DE SERIE</p>
+<h2 id="modalTitle"></h2>
+<div id="modalMeta" class="meta"></div>
+<p id="modalSynopsis"></p>
+<p id="modalEpisodeNote">Video de demostración pendiente de conectar.</p>
+<div class="modal-actions">
+<button class="button" id="watchBtn">Probar experiencia</button>
+<button class="button ghost" id="closeModal">Cerrar</button>
+</div>
+</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL="https://zebjdalderffpyhwfjuu.supabase.co";
+const SUPABASE_KEY="sb_publishable_IQACoFkUwVnw2zPAcyC6xQ_UPemBETv";
+
+let client=null,allSeries=[],activeGenre="Todos",selected=null;
+
+function esc(s){
+return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
+function posterWords(s){
+return esc(s).replace(/\s+/g,"<br>");
+}
+
+function render(){
+const items=allSeries.filter(s=>activeGenre==="Todos"||s.genre===activeGenre);
+const el=document.getElementById("catalog");
+if(!items.length){
+el.innerHTML='<div class="empty">No hay series publicadas en esta categoría todavía.</div>';
+return;
+}
+el.innerHTML=items.map(s=>`
+<article class="series">
+<div class="poster" ${s.poster_url?`style="background-image:linear-gradient(0deg,#080a08 0%,transparent 75%),url('${esc(s.poster_url)}');background-size:cover;background-position:center"`:""}>
+<div class="poster-words"><small>VANTRA ORIGINAL</small>${posterWords(s.title)}</div>
+</div>
+<div class="series-body">
+<h3>${esc(s.title)}</h3>
+<div class="meta">${esc(s.genre||"Serie")} · ${esc(s.age_rating||"Clasificación pendiente")}</div>
+<p class="synopsis">${esc(s.synopsis||"Una historia por descubrir.")}</p>
+<button class="button" data-open="${esc(s.id)}">Ver ficha</button>
+</div>
+</article>`).join("");
+}
+
+async function load(){
+const el=document.getElementById("catalog");
+try{
+if(!window.supabase){
+throw Error("No se pudo cargar la biblioteca de conexión.");
+}
+client=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+const {data,error}=await client.from("series")
+.select("id,title,slug,genre,status,poster_url,synopsis,age_rating")
+.eq("status","published")
+.order("created_at",{ascending:false});
+if(error)throw error;
+allSeries=data||[];
+if(!allSeries.length){
+el.innerHTML='<div class="empty">El catálogo está listo, pero todavía no hay series publicadas. Ejecutá el SQL de prueba incluido en el paquete.</div>';
+return;
+}
+render();
+document.getElementById("notice").textContent="Catálogo actualizado desde Supabase.";
+}catch(e){
+el.innerHTML='<div class="empty">No pudimos cargar el catálogo en vivo. Revisá la conexión de Supabase y las políticas de lectura pública.</div>';
+document.getElementById("notice").textContent=e.message||"Error de conexión.";
+}
+}
+
+document.getElementById("filters").addEventListener("click",e=>{
+const b=e.target.closest("[data-genre]");
+if(!b)return;
+activeGenre=b.dataset.genre;
+document.querySelectorAll("[data-genre]").forEach(x=>x.classList.toggle("active",x===b));
+render();
+});
+
+document.getElementById("catalog").addEventListener("click",e=>{
+const b=e.target.closest("[data-open]");
+if(!b)return;
+selected=allSeries.find(s=>s.id===b.dataset.open);
+if(!selected)return;
+document.getElementById("modalTitle").textContent=selected.title;
+document.getElementById("modalMeta").textContent=(selected.genre||"Serie")+" · "+(selected.age_rating||"Clasificación pendiente");
+document.getElementById("modalSynopsis").textContent=selected.synopsis||"Una historia por descubrir.";
+document.getElementById("modal").classList.add("open");
+});
+
+document.getElementById("closeModal").onclick=()=>document.getElementById("modal").classList.remove("open");
+
+document.getElementById("watchBtn").onclick=()=>{
+document.getElementById("modalEpisodeNote").textContent="La ficha funciona. Para reproducir un episodio real falta cargar el video y configurar su acceso seguro.";
+};
+
+document.getElementById("modal").addEventListener("click",e=>{
+if(e.target.id==="modal")e.currentTarget.classList.remove("open");
+});
+
+load();
+</script>
+</body>
+</html>
