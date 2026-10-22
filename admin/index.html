@@ -1,0 +1,339 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0b0d0b">
+<title>Vantra | Administración</title>
+<style>
+:root{color-scheme:dark;--bg:#0b0d0b;--panel:#151915;--line:#303830;--text:#f5f6f1;--muted:#a2aca1;--lime:#c6ff4d;--red:#ff7777}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:14px system-ui,-apple-system,sans-serif}
+button,input,textarea,select{font:inherit}
+button{cursor:pointer}
+.wrap{max-width:1150px;margin:auto;padding:24px}
+header{display:flex;justify-content:space-between;align-items:center;gap:15px;border-bottom:1px solid var(--line);padding-bottom:20px;margin-bottom:25px}
+.brand{font-size:19px;font-weight:900;letter-spacing:.1em}
+.brand span{color:var(--lime)}
+small,.muted{color:var(--muted)}
+.eyebrow{color:var(--lime);font-size:10px;letter-spacing:.18em;font-weight:800}
+h1{font-size:32px;letter-spacing:-.04em;margin:8px 0}
+h2{font-size:20px;margin:0 0 18px}
+h3{font-size:15px;margin:0 0 8px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px;margin-bottom:20px}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.stat{background:#101310;border:1px solid var(--line);border-radius:12px;padding:17px}
+.stat strong{display:block;font-size:30px;color:var(--lime)}
+label{display:block;color:var(--muted);font-size:12px;margin:12px 0 6px}
+input,textarea,select{width:100%;padding:12px;border-radius:8px;border:1px solid var(--line);background:#0c0f0c;color:var(--text)}
+textarea{min-height:90px;resize:vertical}
+button{border:0;border-radius:8px;padding:11px 15px;font-weight:750;background:var(--lime);color:#10150b}
+button.secondary{background:transparent;color:var(--text);border:1px solid var(--line)}
+button.danger{background:#351919;color:#ffaaaa;border:1px solid #663333}
+.actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:15px}
+.row{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+#app{display:none}
+#login{max-width:440px;margin:55px auto}
+#message{font-size:13px;line-height:1.6;margin-top:12px;overflow-wrap:anywhere}
+.good{color:var(--lime)}.bad{color:var(--red)}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th,td{text-align:left;padding:12px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+th{color:var(--muted);font-weight:600}
+.tablewrap{overflow-x:auto}
+.status{display:inline-block;border:1px solid var(--line);border-radius:99px;padding:4px 8px;font-size:11px}
+#seriesList{display:grid;gap:10px}
+.seriesrow{border:1px solid var(--line);border-radius:10px;padding:14px;display:flex;justify-content:space-between;align-items:center;gap:15px}
+.seriesrow p{margin:6px 0;color:var(--muted);font-size:12px}
+footer{color:var(--muted);font-size:11px;padding:10px 0 30px}
+@media(max-width:700px){.wrap{padding:16px}.grid{grid-template-columns:1fr}.seriesrow{align-items:flex-start;flex-direction:column}header{align-items:flex-start;flex-wrap:wrap}h1{font-size:27px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+<div class="brand"><span>V</span> VANTRA <small style="display:block;font-size:9px;letter-spacing:.2em">ADMINISTRATION</small></div>
+<a href="/" style="color:var(--lime);font-size:12px">Ver catálogo ↗</a>
+</header>
+
+<section id="login" class="panel">
+<p class="eyebrow">ACCESO RESTRINGIDO</p>
+<h1>Panel de control</h1>
+<p class="muted">Iniciá sesión con tu cuenta de administrador de Vantra.</p>
+<form id="loginForm">
+<label for="email">Correo electrónico</label>
+<input id="email" type="email" autocomplete="username" required>
+<label for="password">Contraseña</label>
+<input id="password" type="password" autocomplete="current-password" required>
+<div class="actions"><button type="submit" id="loginButton">Iniciar sesión</button></div>
+</form>
+<div id="loginMessage" role="status"></div>
+</section>
+
+<section id="app">
+<div class="row" style="margin-bottom:20px">
+<div>
+<p class="eyebrow">CENTRO DE CONTROL</p>
+<h1>Panel de administración</h1>
+<p class="muted" id="welcome"></p>
+</div>
+<div class="actions">
+<button class="secondary" id="refreshButton">Actualizar datos</button>
+<button class="secondary" id="logoutButton">Cerrar sesión</button>
+</div>
+</div>
+
+<div class="grid" style="margin-bottom:22px">
+<div class="stat"><span class="muted">Series totales</span><strong id="totalSeries">—</strong></div>
+<div class="stat"><span class="muted">Series publicadas</span><strong id="publishedSeries">—</strong></div>
+<div class="stat"><span class="muted">Usuarios registrados</span><strong id="totalUsers">—</strong></div>
+</div>
+
+<div class="panel">
+<h2>Crear una serie</h2>
+<p class="muted">Los campos de portada deben contener una URL pública de imagen. Para una primera prueba podés usar las imágenes de ejemplo.</p>
+<form id="seriesForm">
+<label for="title">Título</label>
+<input id="title" maxlength="150" required placeholder="Ej.: El Último Refugio">
+<label for="slug">Slug único (URL de la serie)</label>
+<input id="slug" maxlength="160" required pattern="[a-z0-9-]+" placeholder="el-ultimo-refugio">
+<label for="genre">Género</label>
+<select id="genre">
+<option>Apocalipsis</option><option>Acción</option><option>Thriller</option>
+<option>Ciencia ficción</option><option>Drama</option><option>Romance</option><option>Fantasía</option>
+</select>
+<label for="synopsis">Sinopsis</label>
+<textarea id="synopsis" maxlength="3000" required placeholder="Contá brevemente de qué trata la historia."></textarea>
+<label for="poster">URL de póster</label>
+<input id="poster" type="url" required value="https://placehold.co/600x900/172015/C6FF4D/png?text=VANTRA">
+<label for="cover">URL de portada horizontal</label>
+<input id="cover" type="url" required value="https://placehold.co/1200x600/172015/C6FF4D/png?text=VANTRA+ORIGINALS">
+<label for="rating">Clasificación por edad</label>
+<select id="rating"><option>ATP</option><option>13+</option><option selected>16+</option><option>18+</option></select>
+<label for="status">Estado inicial</label>
+<select id="status"><option value="draft">Borrador</option><option value="published">Publicada</option></select>
+<label style="display:flex;align-items:center;gap:9px"><input id="featured" type="checkbox" style="width:auto"> Destacar en el catálogo</label>
+<div class="actions"><button type="submit" id="createButton">Crear serie</button></div>
+</form>
+<div id="seriesMessage" role="status"></div>
+</div>
+
+<div class="panel">
+<div class="row"><h2>Administrar series</h2><span class="muted">Publicar o archivar</span></div>
+<div id="seriesList"><p class="muted">Cargando…</p></div>
+</div>
+
+<div class="panel">
+<h2>Usuarios registrados</h2>
+<p class="muted">Vista de consulta. Las contraseñas no son visibles ni se muestran aquí.</p>
+<div class="tablewrap"><table>
+<thead><tr><th>Correo</th><th>Rol</th><th>Estado</th></tr></thead>
+<tbody id="usersBody"><tr><td colspan="3">Cargando…</td></tr></tbody>
+</table></div>
+</div>
+
+<div class="panel">
+<h2>Membresías</h2>
+<p class="muted">Vista de consulta de membresías existentes.</p>
+<div class="tablewrap"><table>
+<thead><tr><th>Usuario</th><th>Plan</th><th>Estado</th></tr></thead>
+<tbody id="membershipsBody"><tr><td colspan="3">Cargando…</td></tr></tbody>
+</table></div>
+</div>
+<div id="appMessage" role="status"></div>
+</section>
+
+<footer>Vantra Shortcuts Series · Panel de administración · Prototipo inicial</footer>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL="https://zebjdalderffpyhwfjuu.supabase.co";
+const SUPABASE_KEY="sb_publishable_IQACoFkUwVnw2zPAcyC6xQ_UPemBETv";
+const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+const $=id=>document.getElementById(id);
+
+function escapeHtml(value){
+return String(value??"").replace(/[&<>"']/g,c=>({
+"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+}[c]));
+}
+function message(id,text,good=false){
+$(id).textContent=text;
+$(id).className=good?"good":"bad";
+}
+function slugify(text){
+return text.normalize("NFD").replace(/[\u0300-\u036f]/g,"")
+.toLowerCase().trim().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");
+}
+$("title").addEventListener("input",()=>{
+if(!$("slug").dataset.edited)$("slug").value=slugify($("title").value);
+});
+$("slug").addEventListener("input",()=>{$("slug").dataset.edited="1";});
+
+async function checkAdmin(){
+const {data:{user},error}=await sb.auth.getUser();
+if(error||!user)return false;
+const {data:profile,error:profileError}=await sb.from("profiles")
+.select("email,role,account_status").eq("id",user.id).maybeSingle();
+if(profileError)throw profileError;
+if(!profile||profile.role!=="admin"||profile.account_status!=="active"){
+await sb.auth.signOut();
+throw Error("Tu cuenta no tiene permisos de administrador activos. Verificá el perfil en Supabase.");
+}
+$("welcome").textContent="Sesión iniciada: "+(profile.email||user.email||"Administrador");
+return true;
+}
+
+async function showPanel(){
+$("login").style.display="none";
+$("app").style.display="block";
+await refreshData();
+}
+
+$("loginForm").addEventListener("submit",async e=>{
+e.preventDefault();
+$("loginButton").disabled=true;
+message("loginMessage","Verificando acceso…",true);
+try{
+const {error}=await sb.auth.signInWithPassword({
+email:$("email").value.trim(),
+password:$("password").value
+});
+if(error)throw error;
+if(await checkAdmin()){
+await showPanel();
+message("loginMessage","");
+}
+}catch(err){
+await sb.auth.signOut();
+message("loginMessage",err.message||"No se pudo iniciar sesión.");
+$("app").style.display="none";
+$("login").style.display="block";
+}finally{$("loginButton").disabled=false;}
+});
+
+async function countRows(table,queryBuilder){
+const result=await queryBuilder;
+if(result.error)throw result.error;
+return result.count??(result.data?.length??0);
+}
+
+async function refreshData(){
+message("appMessage","Actualizando datos…",true);
+try{
+const ok=await checkAdmin();
+if(!ok)throw Error("La sesión expiró. Iniciá sesión otra vez.");
+const results=await Promise.all([
+sb.from("series").select("id,title,slug,genre,status,poster_url,synopsis,age_rating,featured,created_at").order("created_at",{ascending:false}),
+sb.from("profiles").select("id,email,role,account_status").order("email"),
+sb.from("memberships").select("id,user_id,plan_id,status")
+]);
+for(const r of results)if(r.error)throw r.error;
+const series=results[0].data||[];
+const users=results[1].data||[];
+const memberships=results[2].data||[];
+$("totalSeries").textContent=series.length;
+$("publishedSeries").textContent=series.filter(s=>s.status==="published").length;
+$("totalUsers").textContent=users.length;
+renderSeries(series);
+$("usersBody").innerHTML=users.length?users.map(u=>`<tr><td>${escapeHtml(u.email||"—")}</td><td>${escapeHtml(u.role||"user")}</td><td>${escapeHtml(u.account_status||"—")}</td></tr>`).join(""):'<tr><td colspan="3">Todavía no hay usuarios.</td></tr>';
+$("membershipsBody").innerHTML=memberships.length?memberships.map(m=>`<tr><td>${escapeHtml(m.user_id)}</td><td>${escapeHtml(m.plan_id)}</td><td>${escapeHtml(m.status)}</td></tr>`).join(""):'<tr><td colspan="3">Todavía no hay membresías.</td></tr>';
+message("appMessage","Datos actualizados.",true);
+}catch(err){
+message("appMessage","No se pudieron cargar los datos: "+(err.message||"Error desconocido"));
+}
+}
+
+function renderSeries(series){
+if(!series.length){
+$("seriesList").innerHTML='<p class="muted">Todavía no hay series.</p>';
+return;
+}
+$("seriesList").innerHTML=series.map(s=>`
+<div class="seriesrow">
+<div>
+<strong>${escapeHtml(s.title)}</strong>
+<p>${escapeHtml(s.genre||"Sin género")} · <span class="status">${escapeHtml(s.status)}</span>${s.featured?" · Destacada":""}</p>
+<p>Slug: ${escapeHtml(s.slug)}</p>
+</div>
+<div class="actions" style="margin:0">
+${s.status==="published"
+?`<button class="danger" data-action="archive" data-id="${escapeHtml(s.id)}">Archivar</button>`
+:`<button data-action="publish" data-id="${escapeHtml(s.id)}">Publicar</button>`}
+</div>
+</div>`).join("");
+}
+
+$("seriesList").addEventListener("click",async e=>{
+const button=e.target.closest("button[data-action]");
+if(!button)return;
+const action=button.dataset.action,id=button.dataset.id;
+button.disabled=true;
+try{
+const {error}=await sb.from("series").update({
+status:action==="publish"?"published":"archived"
+}).eq("id",id);
+if(error)throw error;
+message("appMessage",action==="publish"?"Serie publicada.":"Serie archivada.",true);
+await refreshData();
+}catch(err){
+message("appMessage","No se pudo actualizar la serie: "+err.message);
+}finally{button.disabled=false;}
+});
+
+$("seriesForm").addEventListener("submit",async e=>{
+e.preventDefault();
+$("createButton").disabled=true;
+message("seriesMessage","Guardando serie…",true);
+try{
+if(!(await checkAdmin()))throw Error("La sesión no es válida.");
+const payload={
+title:$("title").value.trim(),
+slug:$("slug").value.trim(),
+genre:$("genre").value,
+synopsis:$("synopsis").value.trim(),
+poster_url:$("poster").value.trim(),
+cover_url:$("cover").value.trim(),
+age_rating:$("rating").value,
+status:$("status").value,
+featured:$("featured").checked
+};
+const {error}=await sb.from("series").insert(payload);
+if(error)throw error;
+message("seriesMessage","Serie creada correctamente.",true);
+$("seriesForm").reset();
+$("poster").value="https://placehold.co/600x900/172015/C6FF4D/png?text=VANTRA";
+$("cover").value="https://placehold.co/1200x600/172015/C6FF4D/png?text=VANTRA+ORIGINALS";
+$("slug").dataset.edited="";
+await refreshData();
+}catch(err){
+message("seriesMessage","No se pudo crear la serie: "+(err.message||"Error desconocido"));
+}finally{$("createButton").disabled=false;}
+});
+
+$("refreshButton").addEventListener("click",refreshData);
+$("logoutButton").addEventListener("click",async()=>{
+await sb.auth.signOut();
+$("app").style.display="none";
+$("login").style.display="block";
+$("password").value="";
+message("loginMessage","Sesión cerrada.",true);
+});
+
+sb.auth.onAuthStateChange((event,session)=>{
+if(event==="SIGNED_OUT"){
+$("app").style.display="none";
+$("login").style.display="block";
+}
+});
+
+(async()=>{
+try{
+if(await checkAdmin())await showPanel();
+}catch(e){
+message("loginMessage",e.message||"Iniciá sesión para continuar.");
+}
+})();
+</script>
+</body>
+</html>
